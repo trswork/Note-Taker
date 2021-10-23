@@ -1,31 +1,37 @@
 const fs = require("fs");
-var data = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+let notes = require("/db/db.json")
 
 module.exports = function(app) {
-
-    app.get('/api/notes', (req, res) => {
-        const newNote = req.params.note;
-
-        console.log(newNote);
-    for (let i = 0; i < db.length; i++)
-            {
-                const note = {
-                    title: db[i].title,
-                    text: db[i].text,
-                    id: i
-                };
-    
-                update.push(note);
-            }
-    });
-
-    app.post('/api/notes', (req, res) =>{
-        const newNote = req.body;
-
-        console.log(newNote);
+    app.get('/api/notes', function(req, res) {
+        fs.readFile('./db/db.json', (err, data) => {
+          if (err) throw err;
+          dbResults = JSON.parse(data);
+          res.send(dbResults);
+        });
+      });
       
-        note.push(newNote);
       
-        res.json(newNote);
-});
-}
+        app.post('/api/notes', function(req, res) {
+            const newNotes = req.body;
+        
+            fs.readFile('./db/db.json', (err, data) => {
+              if (err) throw err;
+              dbResults = JSON.parse(data);
+              dbResults.push(newNotes);
+              let number = 1;
+              dbResults.forEach((note, index) => {
+                note.id = number;
+                number++;
+                return dbResults;
+              });
+              console.log(dbResults);
+        
+              stringData = JSON.stringify(dbResults);
+        
+              fs.writeFile('./db/db.json', stringData, (err, data) => {
+                if (err) throw err;
+              });
+            });
+            res.status(204).send();
+          });
+    };
