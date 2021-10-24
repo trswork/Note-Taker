@@ -1,37 +1,29 @@
 const fs = require("fs");
-let notes = require("/db/db.json")
 
 module.exports = function(app) {
-    app.get('/api/notes', function(req, res) {
-        fs.readFile('./db/db.json', (err, data) => {
-          if (err) throw err;
-          dbResults = JSON.parse(data);
-          res.send(dbResults);
-        });
-      });
+    app.get('/api/notes', (req, res) => {
+        fs.readFile(path.join(__dirname + 'db/db.json', (err, data) => {
+          if (err) {
+              throw err
+        }
+        res.json(JSON.parse(data))
+      })
+        )}
+    )
       
       
-        app.post('/api/notes', function(req, res) {
-            const newNotes = req.body;
+        app.post('/api/notes', (req, res) => {
+            let savedNt = JSON.parse(fs.readFileSync("db/db.json", "utf8"));
+            let newNt = req.body;
+            let noteID = (savedNt.length).toString();
+            newNt.id = noteID;
+            savedNt.push(newNote);
         
-            fs.readFile('./db/db.json', (err, data) => {
-              if (err) throw err;
-              dbResults = JSON.parse(data);
-              dbResults.push(newNotes);
-              let number = 1;
-              dbResults.forEach((note, index) => {
-                note.id = number;
-                number++;
-                return dbResults;
-              });
-              console.log(dbResults);
-        
-              stringData = JSON.stringify(dbResults);
-        
-              fs.writeFile('./db/db.json', stringData, (err, data) => {
-                if (err) throw err;
-              });
-            });
-            res.status(204).send();
-          });
+            fs.writeFileSync("db/db.json", JSON.stringify(savedNt));
+            console.log("Note saved to db.json. Content: ", newNt);
+            res.json(savedNt);
+        })
+
+        fs.writeFileSync("db/db.json", JSON.stringify(savedNt));
+        res.json(savedNt);
     };
